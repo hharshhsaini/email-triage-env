@@ -1,298 +1,150 @@
-# Hugging Face Spaces Deployment Guide
+# 🚀 Hugging Face Spaces Deployment Guide
 
-## 🚀 Step-by-Step Deployment Instructions
+This guide walks you through deploying the Email Triage OpenEnv to Hugging Face Spaces.
 
-### Prerequisites
-- Hugging Face account (create at https://huggingface.co/join)
-- GitHub repository already set up ✓ (https://github.com/hharshhsaini/email-triage-env)
+## Prerequisites
 
----
+- Hugging Face account (free): https://huggingface.co/join
+- Git installed on your machine
+- Your HF Space already created: https://huggingface.co/spaces/hharshhsaini/email-triage-env
 
-## Method 1: Direct GitHub Integration (Recommended)
+## Step 1: Get Your Hugging Face Access Token
 
-### Step 1: Create New Space
-1. Go to https://huggingface.co/spaces
-2. Click **"Create new Space"** button
-3. Fill in the details:
-   - **Space name:** `email-triage-env`
-   - **License:** MIT
-   - **Select SDK:** Choose **"Docker"**
-   - **Space hardware:** CPU basic (free tier is fine)
-   - **Visibility:** Public
+1. Go to https://huggingface.co/settings/tokens
+2. Click "New token"
+3. Name it (e.g., "email-triage-deploy")
+4. Select "Write" permissions
+5. Click "Generate token"
+6. **Copy the token** - you'll need it as your password
 
-4. Click **"Create Space"**
+## Step 2: Clone Your HF Space
 
-### Step 2: Connect to GitHub
-1. After creating the space, you'll see the space page
-2. Click on **"Settings"** tab (top right)
-3. Scroll down to **"Repository"** section
-4. Click **"Link to GitHub"**
-5. Authorize Hugging Face to access your GitHub
-6. Select repository: `hharshhsaini/email-triage-env`
-7. Click **"Link repository"**
-
-### Step 3: Configure Sync
-1. In Settings, find **"Sync from GitHub"**
-2. Enable **"Automatic sync"**
-3. Set branch to: `main`
-4. Click **"Save"**
-
-### Step 4: Wait for Build
-1. Go back to **"App"** tab
-2. Space will automatically build from your Dockerfile
-3. Wait 5-10 minutes for first build
-4. You'll see build logs in real-time
-
-### Step 5: Verify Deployment
-Once built, test your endpoints:
 ```bash
-# Replace YOUR_USERNAME with your HF username
-curl https://YOUR_USERNAME-email-triage-env.hf.space/health
-curl https://YOUR_USERNAME-email-triage-env.hf.space/demo
+# Clone the HF Space repository
+git clone https://huggingface.co/spaces/hharshhsaini/email-triage-env hf-space
+cd hf-space
 ```
 
----
+When prompted for credentials:
+- Username: `hharshhsaini`
+- Password: `<paste your HF token here>`
 
-## Method 2: Manual Git Push (Alternative)
+## Step 3: Copy Project Files
 
-### Step 1: Create New Space
-1. Go to https://huggingface.co/spaces
-2. Click **"Create new Space"**
-3. Fill in details (same as Method 1)
-4. Click **"Create Space"**
+From your project root directory:
 
-### Step 2: Clone HF Space Repository
 ```bash
-# Install git-lfs if not already installed
-git lfs install
+# Copy all necessary files to the HF space
+cp email-triage-env/app.py hf-space/
+cp email-triage-env/baseline.py hf-space/
+cp email-triage-env/Dockerfile hf-space/
+cp email-triage-env/requirements.txt hf-space/
+cp email-triage-env/openenv.yaml hf-space/
+cp email-triage-env/README.md hf-space/
 
-# Clone your new space
-git clone https://huggingface.co/spaces/YOUR_USERNAME/email-triage-env
-cd email-triage-env
+# Copy directories
+cp -r email-triage-env/env hf-space/
+cp -r email-triage-env/data hf-space/
+cp -r email-triage-env/tests hf-space/
 ```
 
-### Step 3: Copy Files from GitHub Repo
-```bash
-# Copy all files from your GitHub repo
-cp -r /path/to/email-triage-env/* .
+## Step 4: Commit and Push to HF Space
 
-# Make sure these files are present:
-ls -la
-# Should see: Dockerfile, README.md, app.py, env/, tests/, etc.
-```
-
-### Step 4: Push to Hugging Face
 ```bash
+cd hf-space
+
+# Configure git (if not already done)
+git config user.email "your-email@example.com"
+git config user.name "Harsh Saini"
+
+# Add all files
 git add .
-git commit -m "Initial deployment"
+
+# Commit
+git commit -m "Deploy Email Triage OpenEnv"
+
+# Push to HF Space
 git push
 ```
 
-### Step 5: Wait for Build
-Space will automatically build and deploy.
+When prompted for password, use your HF access token.
 
----
+## Step 5: Wait for Build
 
-## 🔍 Verification Checklist
+- Go to https://huggingface.co/spaces/hharshhsaini/email-triage-env
+- You'll see "Building..." status
+- Wait 5-10 minutes for Docker build to complete
+- Status will change to "Running" when ready
 
-After deployment, verify everything works:
+## Step 6: Verify Deployment
 
-### 1. Health Check
+Test the deployed API:
+
 ```bash
-curl https://YOUR_USERNAME-email-triage-env.hf.space/health
-# Expected: {"status":"ok"}
-```
+# Health check
+curl https://hharshhsaini-email-triage-env.hf.space/health
 
-### 2. Tasks Endpoint
-```bash
-curl https://YOUR_USERNAME-email-triage-env.hf.space/tasks
-# Expected: JSON array with 3 tasks
-```
+# Get available tasks
+curl https://hharshhsaini-email-triage-env.hf.space/tasks
 
-### 3. Demo Endpoint
-```bash
-curl https://YOUR_USERNAME-email-triage-env.hf.space/demo
-# Expected: Demo transcript JSON
-```
-
-### 4. Reset Endpoint
-```bash
-curl -X POST https://YOUR_USERNAME-email-triage-env.hf.space/reset \
+# Test reset endpoint
+curl -X POST https://hharshhsaini-email-triage-env.hf.space/reset \
   -H "Content-Type: application/json" \
-  -d '{"task_id": "priority_triage", "seed": 42}'
-# Expected: Observation JSON with email data
+  -d '{"task_id": "priority_triage"}'
 ```
 
-### 5. Validate Endpoint
-```bash
-curl -X POST https://YOUR_USERNAME-email-triage-env.hf.space/validate
-# Expected: {"status": "valid", "detail": "Environment fully OpenEnv compliant."}
-```
+## Step 7: Submit to Competition
 
----
+Once deployed and verified, submit both URLs:
 
-## 📝 Your URLs for Submission
+1. **GitHub Repository**: https://github.com/hharshhsaini/email-triage-env
+2. **Hugging Face Space**: https://huggingface.co/spaces/hharshhsaini/email-triage-env
 
-Once deployed, you'll have:
+## Troubleshooting
 
-**GitHub Repository URL:**
-```
-https://github.com/hharshhsaini/email-triage-env
-```
+### Build Fails
 
-**Hugging Face Space URL:**
-```
-https://huggingface.co/spaces/YOUR_USERNAME/email-triage-env
-```
-
-Replace `YOUR_USERNAME` with your actual Hugging Face username.
-
----
-
-## 🐛 Troubleshooting
-
-### Issue: Build Fails
-**Solution:** Check build logs in HF Space
-- Go to "Settings" → "Logs"
-- Look for error messages
+- Check the "Logs" tab in your HF Space
 - Common issues:
-  - Missing dependencies in requirements.txt
-  - Dockerfile syntax errors
-  - Port not exposed correctly
+  - Missing files: Make sure all files were copied
+  - Dockerfile errors: Verify Dockerfile syntax
+  - Dependencies: Check requirements.txt
 
-### Issue: Space Shows "Building..."
-**Solution:** Wait 5-10 minutes for first build
-- Docker builds can take time
-- Check logs for progress
-- If stuck >15 minutes, restart build
+### Space Shows "Sleeping"
 
-### Issue: Endpoints Return 404
-**Solution:** Check if app is running
-- Verify Dockerfile CMD is correct
-- Check logs for startup errors
-- Ensure port 7860 is exposed
+- HF Spaces on free tier sleep after inactivity
+- First request will wake it up (may take 30 seconds)
+- Consider upgrading to persistent hardware if needed
 
-### Issue: Health Check Fails
-**Solution:** 
-```bash
-# Check if server started
-curl https://YOUR_SPACE_URL/
-# Should return API info
+### API Not Responding
 
-# Check logs in HF Space settings
-```
+- Check if space is "Running" (not "Building" or "Error")
+- Try the health endpoint first
+- Check logs for errors
 
----
+## Configuration Notes
 
-## 🎯 Competition Submission
+### Space Settings
 
-After successful deployment:
+Your HF Space is configured with:
+- **SDK**: Docker (required for OpenEnv)
+- **Hardware**: CPU basic (free tier - sufficient for this environment)
+- **Visibility**: Public (required for competition)
 
-1. **GitHub Repository URL:**
-   ```
-   https://github.com/hharshhsaini/email-triage-env
-   ```
+### Environment Variables
 
-2. **Hugging Face Space URL:**
-   ```
-   https://huggingface.co/spaces/YOUR_USERNAME/email-triage-env
-   ```
+No environment variables needed for basic operation. If you want to enable the baseline script on HF:
 
-3. **Verify automated checks pass:**
-   - Space deploys ✓
-   - Health endpoint responds ✓
-   - Reset endpoint works ✓
-   - Step endpoint works ✓
-   - Validate endpoint returns "valid" ✓
+1. Go to Space Settings
+2. Add secret: `OPENAI_API_KEY` = `your-key`
+3. Restart space
 
-4. **Submit both URLs to competition**
+## Re-submission
 
----
+You can re-submit to the competition multiple times. The competition evaluates your latest submission, so feel free to iterate and improve!
 
-## 📊 Expected Build Time
+## Support
 
-- **First build:** 5-10 minutes
-- **Subsequent builds:** 2-5 minutes (cached layers)
-
----
-
-## 🔄 Updating Your Space
-
-### If using GitHub integration:
-```bash
-# Make changes locally
-git add .
-git commit -m "Update description"
-git push origin main
-
-# HF Space will auto-sync and rebuild
-```
-
-### If using manual push:
-```bash
-cd email-triage-env  # Your HF space repo
-# Make changes
-git add .
-git commit -m "Update description"
-git push
-```
-
----
-
-## 💡 Tips
-
-1. **Use GitHub integration** - Easier to maintain
-2. **Enable auto-sync** - Automatic updates from GitHub
-3. **Check logs** - If something fails, logs tell you why
-4. **Test locally first** - Run `docker build` before pushing
-5. **Free tier is fine** - CPU basic is sufficient for this project
-
----
-
-## 🎓 What Happens During Build
-
-1. HF pulls your repository
-2. Reads Dockerfile
-3. Builds Docker image
-4. Installs dependencies from requirements.txt
-5. Starts uvicorn server on port 7860
-6. Runs health check
-7. Makes space publicly accessible
-
----
-
-## ✅ Success Indicators
-
-You'll know deployment succeeded when:
-- ✅ Space shows "Running" status (not "Building")
-- ✅ Green checkmark next to space name
-- ✅ `/health` endpoint returns `{"status":"ok"}`
-- ✅ `/demo` endpoint returns demo transcript
-- ✅ No errors in logs
-
----
-
-## 📞 Need Help?
-
-If you encounter issues:
-1. Check HF Space logs (Settings → Logs)
-2. Verify Dockerfile builds locally: `docker build -t test .`
-3. Test locally: `docker run -p 7860:7860 test`
-4. Check HF Spaces documentation: https://huggingface.co/docs/hub/spaces
-
----
-
-## 🎉 After Successful Deployment
-
-Your space will be live at:
-```
-https://huggingface.co/spaces/YOUR_USERNAME/email-triage-env
-```
-
-You can:
-- Share the link
-- Embed in websites
-- Use API endpoints
-- Submit to competition
-
-**Ready to deploy!** 🚀
+- HF Spaces Docs: https://huggingface.co/docs/hub/spaces
+- OpenEnv Spec: https://github.com/OpenEnv-org/OpenEnv
+- Issues: https://github.com/hharshhsaini/email-triage-env/issues
