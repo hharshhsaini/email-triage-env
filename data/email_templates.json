@@ -1,0 +1,520 @@
+{
+  "urgent": [
+    {
+      "subject": "URGENT: Production down - {client} cannot login",
+      "body": "Hi team, we just received multiple P0 alerts that the main production database is unresponsive. {client} is completely blocked from logging in and their operations have halted. They are in contact with our VP and threatening to invoke the SLA penalty clause. Please get on the active incident bridge immediately. I need a status update in the next 10 minutes or I am escalating to CTO.",
+      "sender_name": "Sarah Chen",
+      "sender_email": "sarah.chen@clientcorp.com",
+      "sender_domain": "clientcorp.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "CRITICAL: Zero-day vulnerability detected in latest release",
+      "body": "Team, our automated security scanner has detected a critical zero-day vulnerability in the third-party library shipped in last night's deploy. Attackers could exploit this to execute arbitrary code. We need to roll back the release immediately, rotate all API keys, and patch before redeploying. Do not merge anything new until this is resolved. Security lead should be notified immediately.",
+      "sender_name": "Marcus Webb",
+      "sender_email": "m.webb@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "URGENT: Payment gateway is completely down",
+      "body": "Stripe integration is failing across all regions in production. Every checkout attempt is throwing a 503. We are losing approximately $4,000 in revenue per minute. I have already contacted Stripe support and they say it is on our end. Who touched the billing service last? Please revert the last PR and confirm with me the moment it is fixed.",
+      "sender_name": "David Kim",
+      "sender_email": "david.kim@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "URGENT: Enterprise client threatening to cancel $500K contract",
+      "body": "I just got off a very tense call with GlobalTech's CTO. The feature we promised in this sprint was not in the release and they are furious. They have given us until end of business today to push a hotfix or they will initiate the contract termination clause. This is our largest client. Please escalate to engineering leadership immediately and let me know what we can deliver.",
+      "sender_name": "Emily Russo",
+      "sender_email": "e.russo@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "P0: Entire API returning 504 Gateway Timeout",
+      "body": "All API endpoints are timing out across all regions. I have checked the load balancers and they look fine, so this appears to be a database connection pool exhaustion issue. Auto-scaling has triggered but is not helping. We have roughly 800 active users currently blocked. The on-call engineer needs to be paged immediately and the incident channel opened.",
+      "sender_name": "Alerting System",
+      "sender_email": "alerts@monitoring.company.com",
+      "sender_domain": "monitoring.company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    }
+  ],
+  "meeting": [
+    {
+      "subject": "You're invited: All-hands Q3 Review - Thursday 2pm EST",
+      "body": "Hello team, please join us this Thursday for our quarterly all-hands meeting. We will be reviewing Q3 financial performance, celebrating recent wins, and walking through the updated roadmap for Q4. A Zoom link will be sent separately. Please block the full two hours. A recording will be available for those who cannot attend live.",
+      "sender_name": "People & Culture",
+      "sender_email": "allhands@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "meeting"}
+    },
+    {
+      "subject": "Sync request: Q4 roadmap planning - your input needed",
+      "body": "Hi, I would love to get 30 minutes this week to walk through the Q4 engineering deliverables. Product has finalized the priority list and I want your input before we lock in the sprint plan. I have attached the draft roadmap doc for your review. Please let me know your availability via the Calendly link or suggest a time that works for you.",
+      "sender_name": "Alex Patel",
+      "sender_email": "alex.patel@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Q4_Roadmap_Draft_v2.pdf"],
+      "ground_truth": {"priority": "high", "category": "meeting"}
+    },
+    {
+      "subject": "Design Review: Mobile App Refresh - Figma ready",
+      "body": "Hey team, the design team has completed the high-fidelity mockups for the mobile app UI refresh. We are scheduling a 1-hour design review to walk through every screen and get engineering feedback on feasibility. The Figma prototype is linked below. Please come prepared with questions about implementation complexity and edge cases.",
+      "sender_name": "Jamie Torres",
+      "sender_email": "j.torres@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "meeting"}
+    },
+    {
+      "subject": "Calendar invite: Weekly 1:1 with your manager",
+      "body": "Hi, adding our recurring weekly 1:1 to the calendar for the next quarter. Agenda: status updates on your current projects, blockers you need help with, and any career or performance topics you want to discuss. Feel free to add items to our shared doc at any time before our meeting. If you need to reschedule any session, just let me know with at least 24 hours notice.",
+      "sender_name": "Lisa Monroe",
+      "sender_email": "l.monroe@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "meeting"}
+    },
+    {
+      "subject": "Sprint Planning Meeting - Monday 10am",
+      "body": "Reminder that sprint planning for Sprint 34 is scheduled for Monday at 10 AM in the main conference room and on Zoom. Please come prepared with your capacity for the sprint and any concerns about the current backlog. We will be committing to 42 story points based on the team's last velocity. Backlog has been refined and is ready for review in Jira.",
+      "sender_name": "Scrum Master",
+      "sender_email": "scrummaster@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "meeting"}
+    },
+    {
+      "subject": "Executive briefing: Board presentation prep - RSVP required",
+      "body": "Please RSVP for the board presentation prep session happening next Wednesday at 3 PM. The CEO and CFO will be doing a dry run of the quarterly board deck and need feedback from department leads. Your attendance is mandatory as you will be presenting the engineering section. Please review the latest deck version attached and prepare your 5-minute segment.",
+      "sender_name": "CEO Office",
+      "sender_email": "ceo.office@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Board_Deck_Q3_DRAFT.pptx"],
+      "ground_truth": {"priority": "high", "category": "meeting"}
+    }
+  ],
+  "internal": [
+    {
+      "subject": "Project Phoenix - Week 4 Status Update",
+      "body": "Hi team, here is the weekly status update for Project Phoenix. We have completed the backend API refactoring and merged 47 PRs this week alone. The database migration is on track and we are now 3 days ahead of the original schedule. Staging environment is ready for QA testing. Please submit any blocker tickets by tomorrow so we can address them in Friday's sync.",
+      "sender_name": "Project Lead",
+      "sender_email": "project.lead@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "internal"}
+    },
+    {
+      "subject": "Deployment notice: v2.4.1 going live at 6pm EST",
+      "body": "This is a heads up that we will be deploying v2.4.1 to production today at 6 PM EST. The release includes the new dashboard filtering feature, three bug fixes, and performance improvements to the reporting module. Expected downtime is zero - we are using blue-green deployment. Please hold off on any production deployments from 5 to 7 PM during the maintenance window.",
+      "sender_name": "DevOps Team",
+      "sender_email": "devops@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "internal"}
+    },
+    {
+      "subject": "New engineering wiki: onboarding docs updated",
+      "body": "The engineering onboarding documentation has been completely rewritten and is now live on Confluence. It includes a step-by-step local dev environment setup guide, an explanation of our branching strategy, and architecture diagrams for each microservice. Please share this with any new hires and update the pinned Slack message to point to the new link. Feedback and contributions are welcome via pull requests.",
+      "sender_name": "Engineering Enablement",
+      "sender_email": "enablement@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "internal"}
+    },
+    {
+      "subject": "Bug Bash Results - 12 issues found",
+      "body": "Thank you to everyone who joined yesterday's bug bash! The team identified 12 bugs: 2 critical, 4 major, and 6 minor. I have created Jira tickets for all of them and linked them to the Q4 bug fix epic. The two critical issues will be addressed in a hotfix this week. The remaining bugs are triaged for Sprint 34. Great effort from the whole team!",
+      "sender_name": "QA Lead",
+      "sender_email": "qa.lead@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Bug_Bash_Summary.xlsx"],
+      "ground_truth": {"priority": "normal", "category": "internal"}
+    },
+    {
+      "subject": "Architecture Decision: Moving to event-driven microservices",
+      "body": "After three months of evaluation, the architecture committee has decided to migrate our monolith to an event-driven microservices architecture using Kafka as the message broker. The migration will happen over 18 months in four phases. We will share the detailed ADR document and migration plan at next week's engineering all-hands. Please hold any major new service integrations until after Phase 1 is defined.",
+      "sender_name": "CTO Office",
+      "sender_email": "cto@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "high", "category": "internal"}
+    },
+    {
+      "subject": "RFC: Proposal for new code review standards",
+      "body": "I have written a short RFC proposing updates to our code review standards and expectations. The main changes are: mandatory two-reviewer approval for any changes touching the payments module, a 48-hour SLA for review turnaround, and a new template for PR descriptions. Please read the proposal in Confluence and add your comments by Friday. We will discuss and vote at the Monday engineering meeting.",
+      "sender_name": "Senior Engineer",
+      "sender_email": "sr.engineer@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "internal"}
+    }
+  ],
+  "hr": [
+    {
+      "subject": "ACTION REQUIRED: Complete mandatory security training by Friday",
+      "body": "This is a reminder that all employees must complete the annual data security and compliance training by end of day Friday. The training takes approximately 45 minutes and is available through the learning management system via the link below. Employees who do not complete this training will have their access credentials temporarily suspended until they comply. Please do not ignore this notice.",
+      "sender_name": "HR Compliance Team",
+      "sender_email": "hr.compliance@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "high", "category": "hr"}
+    },
+    {
+      "subject": "Open enrollment for benefits begins next Monday",
+      "body": "Open enrollment for employee health benefits begins next Monday and runs for two weeks. This is the only opportunity to change your medical, dental, and vision plans until next year. We have a new premium plan option with expanded mental health coverage. An information session will be held on Wednesday at noon. Please reach out to HR with any questions.",
+      "sender_name": "HR Benefits",
+      "sender_email": "benefits@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["2025_Benefits_Guide.pdf"],
+      "ground_truth": {"priority": "normal", "category": "hr"}
+    },
+    {
+      "subject": "Welcome our new teammates: Lucas and Maria!",
+      "body": "Please join us in welcoming Lucas Ferreira (Senior Backend Engineer) and Maria Okonkwo (Product Designer) who are both starting today! Lucas comes from Spotify and Maria previously worked at Figma. They will be completing their onboarding this week. Please say hello on Slack in the #introductions channel and help them feel at home.",
+      "sender_name": "People & Culture",
+      "sender_email": "people@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "hr"}
+    },
+    {
+      "subject": "Updated remote work expense reimbursement policy",
+      "body": "We have updated the remote work expense reimbursement policy effective November 1st. Employees working remotely are eligible for a one-time home office setup stipend of $500 and a monthly internet reimbursement of up to $75. Requests must be submitted via Expensify with receipts within 30 days. The full policy is attached. Please review it carefully as some previous categories have changed.",
+      "sender_name": "Finance & HR",
+      "sender_email": "finance.hr@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Remote_Work_Policy_Nov2024.pdf"],
+      "ground_truth": {"priority": "normal", "category": "hr"}
+    },
+    {
+      "subject": "Performance review cycle starts in two weeks",
+      "body": "The bi-annual performance review cycle kicks off in two weeks. You will receive a self-evaluation form to complete, after which your manager will share 360-degree feedback. Reviews will be conducted as 30-minute 1:1 meetings. Compensation adjustments based on performance ratings will take effect in January. Please start reflecting on your achievements and goals for the period.",
+      "sender_name": "HR Operations",
+      "sender_email": "hr.ops@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "hr"}
+    }
+  ],
+  "billing": [
+    {
+      "subject": "Invoice #INV-2024-0847 from Acme Corp - $12,450.00 due",
+      "body": "Please find attached invoice #INV-2024-0847 for professional consulting services rendered in October 2024. The total amount due is $12,450.00 USD. Payment terms are Net-30 from the invoice date. Please remit payment via ACH bank transfer using the account details on page 2 of the invoice. Contact billing@acmecorp.com with any questions.",
+      "sender_name": "Acme Corp Billing",
+      "sender_email": "billing@acmecorp.com",
+      "sender_domain": "acmecorp.com",
+      "has_attachments": true,
+      "attachment_names": ["INV-2024-0847.pdf"],
+      "ground_truth": {"priority": "normal", "category": "billing"}
+    },
+    {
+      "subject": "Your AWS bill for October 2024 is available: $4,832.11",
+      "body": "Your monthly AWS statement for October 2024 is now available in the billing console. Total charges: $4,832.11. The main cost drivers this month were EC2 compute (68%), RDS storage (18%), and data transfer (9%). Detailed usage breakdown is available in your Cost Explorer dashboard. This amount will be automatically charged to your credit card on November 3rd.",
+      "sender_name": "AWS Billing",
+      "sender_email": "billing@amazon.com",
+      "sender_domain": "amazon.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "billing"}
+    },
+    {
+      "subject": "Payment Failed: Your GitHub Enterprise subscription",
+      "body": "We were unable to process the payment for your GitHub Enterprise subscription. Your card ending in 4242 was declined. Your organization's access will be suspended in 72 hours if payment is not updated. Please log in to your GitHub billing settings and update your payment method to avoid service interruption. Contact enterprise-support@github.com if you need assistance.",
+      "sender_name": "GitHub Enterprise",
+      "sender_email": "noreply@github.com",
+      "sender_domain": "github.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "high", "category": "billing"}
+    },
+    {
+      "subject": "Stripe: Your October payout of $87,432.00 has been sent",
+      "body": "Your monthly payout from Stripe has been initiated. Amount: $87,432.00 USD. It should arrive in your bank account within 2 business days. Your gross volume for October was $96,200.00 and processing fees totaled $2,768.00. Your net payout after refunds and fees is $87,432.00. You can view your full statement in the Stripe Dashboard.",
+      "sender_name": "Stripe Payouts",
+      "sender_email": "payouts@stripe.com",
+      "sender_domain": "stripe.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "billing"}
+    },
+    {
+      "subject": "Vendor contract renewal: Datadog - approval required",
+      "body": "Our annual Datadog APM contract is up for renewal on December 1st. Their renewal proposal includes a 12% rate increase, bringing the annual cost to $84,000. I have reviewed the proposal and attached a comparison with two alternative vendors. Finance needs a signed purchase order by November 15th to process on time. Please review and let me know your decision so we can proceed.",
+      "sender_name": "Procurement Team",
+      "sender_email": "procurement@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Datadog_Renewal_2025.pdf", "Vendor_Comparison.xlsx"],
+      "ground_truth": {"priority": "high", "category": "billing"}
+    },
+    {
+      "subject": "Receipt: Your Zoom Pro subscription renewal - $199.90",
+      "body": "Thank you for renewing your Zoom Pro annual subscription. Your account has been renewed for another year at $199.90. This charge has been applied to your Visa card ending in 5678. Your subscription is active through November 2025. You can manage your plan and view receipts in your Zoom account settings.",
+      "sender_name": "Zoom Support",
+      "sender_email": "no-reply@zoom.us",
+      "sender_domain": "zoom.us",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "billing"}
+    }
+  ],
+  "customer": [
+    {
+      "subject": "Support Ticket #58291: Cannot export report data",
+      "body": "Hi there, I have been trying to export my monthly analytics report as a CSV for the last two hours and I keep getting an 'Internal Server Error' message. This is blocking my end-of-month reporting that I need to send to my board this afternoon. I tried three different browsers and cleared my cache. This is extremely urgent for me. Ticket ID: #58291.",
+      "sender_name": "Jason Whitfield",
+      "sender_email": "j.whitfield@bigclient.com",
+      "sender_domain": "bigclient.com",
+      "has_attachments": true,
+      "attachment_names": ["error_screenshot.png"],
+      "ground_truth": {"priority": "high", "category": "customer"}
+    },
+    {
+      "subject": "FWD: Customer complaint - order #98234 not delivered",
+      "body": "Forwarding this complaint from a premium customer. They placed an order (#98234) 12 days ago and have not received it. The tracking page shows the shipment has been stuck in transit for 8 days with no updates. They are demanding a refund and threatening to dispute the charge with their bank. Please look into this and reach out to the customer directly with a resolution.",
+      "sender_name": "Customer Success",
+      "sender_email": "cs@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "high", "category": "customer"}
+    },
+    {
+      "subject": "Feature request: Dark mode and keyboard shortcuts",
+      "body": "I have been using your platform for about six months now and overall I love it. Two things I would really love to see: a dark mode option for late-night work sessions, and keyboard shortcuts for the most common actions. Both of these would significantly improve my daily workflow. Is there a public roadmap I can check to vote on features? Happy to beta test if you need users.",
+      "sender_name": "Robert Singh",
+      "sender_email": "r.singh@gmail.com",
+      "sender_domain": "gmail.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "customer"}
+    },
+    {
+      "subject": "Refund request - Annual plan purchased by mistake",
+      "body": "I accidentally purchased the annual Business plan instead of the monthly Starter plan. I realized the mistake within 20 minutes and I would like a full refund. I have not used any premium features. I know you have a 14-day refund policy and I am well within that window. My order number is ORD-20241102-8823. Please process this promptly.",
+      "sender_name": "Amy Foster",
+      "sender_email": "amy.foster@hotmail.com",
+      "sender_domain": "hotmail.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "customer"}
+    },
+    {
+      "subject": "API integration question: rate limits and pagination",
+      "body": "Hello support team. We are in the process of building a production integration with your REST API. We have a few technical questions: What are the rate limits for the data export endpoint? Does the API support cursor-based pagination for large result sets? Is there a webhook available for real-time updates? We can also schedule a call with your solutions engineering team if available.",
+      "sender_name": "Dev Team at TechCorp",
+      "sender_email": "integrations@techcorp.io",
+      "sender_domain": "techcorp.io",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "customer"}
+    },
+    {
+      "subject": "Frustrated with the new UI update - usability issues",
+      "body": "I want to provide feedback on the UI update you pushed last Tuesday. The new navigation is confusing and I cannot find features I used daily. The settings menu was moved and the bulk action buttons are now buried three clicks deep. I have been a paying customer for two years and I am genuinely considering leaving if usability does not improve. Please send this to your product team.",
+      "sender_name": "Patricia Nguyen",
+      "sender_email": "p.nguyen@yahoo.com",
+      "sender_domain": "yahoo.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "normal", "category": "customer"}
+    }
+  ],
+  "newsletter": [
+    {
+      "subject": "The Weekly Digest: AI in the Enterprise, October Edition",
+      "body": "Welcome to this week's edition of The Weekly Digest. In today's issue: how Fortune 500 companies are deploying LLMs in internal tooling, a deep dive into vector database performance benchmarks, and an interview with the CTO of a Y Combinator startup on building AI-first products. Read time: 12 minutes. Click to view in browser if this email does not render correctly.",
+      "sender_name": "The Weekly Digest",
+      "sender_email": "newsletter@weeklydigest.com",
+      "sender_domain": "weeklydigest.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "newsletter"}
+    },
+    {
+      "subject": "Special offer: 40% off ergonomic standing desks - 48 hours only",
+      "body": "Happy Monday! We have an exclusive 48-hour sale on our entire ergonomic furniture line. All standing desks are 40% off using code STAND40 at checkout. Free shipping on orders over $300. Our bestselling sit-stand converter is now just $149. Thousands of knowledge workers swear by it for reducing back pain. Shop now before stock runs out.",
+      "sender_name": "ErgoDesk Co.",
+      "sender_email": "offers@ergodesk.com",
+      "sender_domain": "ergodesk.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "newsletter"}
+    },
+    {
+      "subject": "Dev.to Weekly: Top 10 articles our community loved last week",
+      "body": "Here are the top 10 articles from the DEV Community that developers loved most this week. Highlights: a tutorial on Rust memory management, a guide to building real-time apps with WebSockets, and a personal essay on the burnout epidemic in tech. Click any title to read the full article. Have something to share? Post it on DEV this week.",
+      "sender_name": "DEV Community",
+      "sender_email": "newsletter@dev.to",
+      "sender_domain": "dev.to",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "newsletter"}
+    },
+    {
+      "subject": "Webinar invitation: Mastering Kubernetes at Scale - FREE",
+      "body": "Join us for a free 90-minute live webinar on mastering Kubernetes at scale. Our expert instructors will cover: advanced HPA configurations, cost optimization with spot instances, and debugging production cluster failures live. Over 2,000 engineers are already registered. Secure your spot now - webinar is next Thursday at 2pm EST. A recording will be available if you cannot attend live.",
+      "sender_name": "Cloud Native Academy",
+      "sender_email": "events@cloudnativeacademy.io",
+      "sender_domain": "cloudnativeacademy.io",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "newsletter"}
+    },
+    {
+      "subject": "Medium Daily Digest: Stories for you",
+      "body": "Good morning! Based on your reading history, we have curated these stories for you today: '10 Python patterns senior engineers swear by', 'The hidden cost of technical debt', and 'Building a second brain for developers'. All stories are free to read with your Medium membership. Enjoy your reading!",
+      "sender_name": "Medium",
+      "sender_email": "noreply@medium.com",
+      "sender_domain": "medium.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "newsletter"}
+    }
+  ],
+  "spam": [
+    {
+      "subject": "You have been selected for a $1,000,000 unclaimed inheritance",
+      "body": "Dear Beneficiary, I am Barrister James Okonkwo from the Federal High Court of Lagos. I write to inform you that you have been listed as the sole beneficiary of an unclaimed estate worth ONE MILLION United States Dollars. To release your funds, kindly provide your bank details and wire a $350 processing fee to the account below within 48 hours.",
+      "sender_name": "Barrister James",
+      "sender_email": "legal.funds@quickmoney.tk",
+      "sender_domain": "quickmoney.tk",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "spam"}
+    },
+    {
+      "subject": "Immediate action: Your account has been compromised",
+      "body": "ALERT: We detected unusual login activity on your account from location RUSSIA. Your account has been temporarily locked for your protection. Click the link below to verify your identity and unlock your account within 24 hours or it will be permanently deleted. Do not share this link with anyone. [VERIFY NOW]",
+      "sender_name": "Security Team",
+      "sender_email": "security.alert@account-verify-secure.com",
+      "sender_domain": "account-verify-secure.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "spam"}
+    },
+    {
+      "subject": "Boost your SEO rankings to #1 on Google guaranteed!",
+      "body": "Hi! I noticed your website is buried on page 4 of Google. We are a leading digital marketing agency and we GUARANTEE page 1 rankings within 30 days or your money back. We have helped over 10,000 businesses. Our proprietary methods generate real organic traffic. Reply YES to this email for a FREE audit and custom proposal. Limited spots available!",
+      "sender_name": "SEO Guru Pro",
+      "sender_email": "contact@seoguru-rankings.biz",
+      "sender_domain": "seoguru-rankings.biz",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "spam"}
+    },
+    {
+      "subject": "Your USPS package could not be delivered - action required",
+      "body": "The United States Postal Service attempted to deliver your package today but was unsuccessful. Your package will be held for 3 days before being returned. To schedule a redelivery, please click the link below and pay a $2.99 redelivery handling fee. Tracking Number: 9400111899220028220842. Click here to confirm your delivery address.",
+      "sender_name": "USPS Delivery Center",
+      "sender_email": "delivery@usps-notification-center.com",
+      "sender_domain": "usps-notification-center.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "spam"}
+    },
+    {
+      "subject": "Congratulations! You are our lucky winner - claim your iPhone 16 Pro",
+      "body": "You have been randomly selected as today's lucky winner of a brand new iPhone 16 Pro (256GB, Titanium Black). To claim your prize, complete a short 3-minute survey to confirm your mailing address. This offer expires in 9 hours and 42 minutes. You have won because your email was selected from our monthly sweepstakes pool. Act now before your prize is given to another winner!",
+      "sender_name": "Rewards Center",
+      "sender_email": "winner@daily-prize-center.net",
+      "sender_domain": "daily-prize-center.net",
+      "has_attachments": false,
+      "ground_truth": {"priority": "spam", "category": "spam"}
+    }
+  ],
+  "action_required": [
+    {
+      "subject": "Re: Q4 Budget Review - Action Required by EOD Friday",
+      "body": "I need you to review the Q4 departmental budget spreadsheet and flag any line items that exceed the approved allocation. We are presenting to the board on Monday and the numbers need to be clean. Finance found a discrepancy in the infrastructure spend column. Please resolve this and resubmit by end of day Friday without fail. This blocks the entire board presentation.",
+      "sender_name": "CFO",
+      "sender_email": "cfo@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Q4_Budget_Review_FINAL.xlsx"],
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "Please approve: $45,000 cloud infrastructure upgrade",
+      "body": "The infrastructure team has submitted a proposal to upgrade our cloud environment to handle the projected 3x load increase for Black Friday. The total estimated cost is $45,000 for Q4. This needs VP approval before procurement can process the order. The lead time for hardware provisioning is 3 weeks, so we need a decision by end of week to make the timeline. Purchase order is attached.",
+      "sender_name": "Infra Manager",
+      "sender_email": "infra.manager@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Infra_PO_Q4_2024.pdf"],
+      "ground_truth": {"priority": "high", "category": "action_required"}
+    },
+    {
+      "subject": "ACTION REQUIRED: Sign updated contractor NDA",
+      "body": "Due to the upcoming M&A activity, all employees and contractors with access to sensitive systems must sign the updated non-disclosure agreement. This is legally binding and mandatory. You have until 5 PM tomorrow to sign via DocuSign using the link below. Access to systems including source code repositories and financial dashboards will be restricted until we receive your signature.",
+      "sender_name": "Legal Department",
+      "sender_email": "legal@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Updated_NDA_2024.pdf"],
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "Your PR is blocking the release - please review now",
+      "body": "Hey, I know you are busy but your open pull request #1847 (database schema migration) is blocking the entire v2.4 release. The code freeze is in 3 hours. I have left a few comments that need your response - two are blocking issues around transaction safety. Could you please take a look immediately? I can pair with you on it if that helps. Pinging here because Slack is not getting a response.",
+      "sender_name": "Senior Engineer",
+      "sender_email": "sr.eng@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "urgent", "category": "action_required"}
+    },
+    {
+      "subject": "Incident Post-Mortem: YOUR section due by Wednesday",
+      "body": "Following last week's production incident, we are conducting a blameless post-mortem. You have been assigned to write the 'Detection and Response' section of the post-mortem document. Your draft is due by Wednesday at noon so the full document can be reviewed before the all-hands presentation on Thursday. The post-mortem template is shared in Confluence. Please do not miss this deadline.",
+      "sender_name": "Engineering Manager",
+      "sender_email": "eng.manager@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "high", "category": "action_required"}
+    }
+  ],
+  "fyi": [
+    {
+      "subject": "FYI: Office closed Friday for building maintenance",
+      "body": "Just a heads up that the main office building will be closed this Friday for HVAC maintenance and floor waxing. All employees are expected to work from home. If you need to retrieve any equipment or materials beforehand, please do so by Thursday at 5 PM. The building will reopen Monday morning as normal. The parking garage is not affected.",
+      "sender_name": "Facilities Team",
+      "sender_email": "facilities@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "fyi"}
+    },
+    {
+      "subject": "FWD: Analyst report - our industry segment Q3 performance",
+      "body": "Forwarding this Gartner analyst report on our industry segment's Q3 performance. We came out well in the mid-market category, though there are some concerning notes on customer churn trends across the sector. Not urgent but relevant context for upcoming strategy discussions. Worth a read before next week's leadership offsite. Full report attached.",
+      "sender_name": "VP Strategy",
+      "sender_email": "vp.strategy@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": true,
+      "attachment_names": ["Gartner_Industry_Report_Q3.pdf"],
+      "ground_truth": {"priority": "low", "category": "fyi"}
+    },
+    {
+      "subject": "FYI: AWS scheduled maintenance this weekend",
+      "body": "AWS has notified us of scheduled maintenance on our primary us-east-1 RDS instances this Sunday between 2 and 4 AM EST. We have verified that automatic failover is configured and no user-facing downtime is expected. Our on-call engineer will be monitoring during the window just in case. No action needed from the team.",
+      "sender_name": "DevOps Team",
+      "sender_email": "devops@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "fyi"}
+    },
+    {
+      "subject": "FWD: Customer success story - 10x ROI with our platform",
+      "body": "Sharing this customer success story that the marketing team just published. MegaRetail Corp achieved a 10x ROI within 6 months of implementing our analytics suite. The case study highlights the data pipeline features your team built last year. Marketing would love engineer quotes for the next batch of customer stories if anyone is interested.",
+      "sender_name": "Marketing",
+      "sender_email": "marketing@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "fyi"}
+    },
+    {
+      "subject": "FYI: Competitor just announced a major product update",
+      "body": "Worth being aware of: our main competitor Axiom.ai just announced a major product update with native SQL support and a revamped mobile application. Their pricing has also dropped by 20%. I will bring this up at Monday's product sync for a competitive response discussion. No immediate action needed but feel free to review their announcement blog post.",
+      "sender_name": "Product Team",
+      "sender_email": "product@company.com",
+      "sender_domain": "company.com",
+      "has_attachments": false,
+      "ground_truth": {"priority": "low", "category": "fyi"}
+    }
+  ]
+}

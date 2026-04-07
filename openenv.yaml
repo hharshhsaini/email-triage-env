@@ -1,0 +1,99 @@
+name: email-triage-env
+version: "1.0.0"
+description: >
+  An OpenEnv environment for training and evaluating AI agents on 
+  enterprise email triage. Agents manage a realistic inbox: prioritizing, 
+  categorizing, drafting replies, escalating, and archiving. Models a 
+  real-world knowledge worker task with immediate value for productivity 
+  agent development.
+
+author: "Antigravity"
+license: MIT
+
+environment:
+  entry_point: app.py
+  api_base: http://localhost:7860
+  reset_endpoint: /reset
+  step_endpoint: /step
+  state_endpoint: /state
+  
+tasks:
+  - id: priority_triage
+    name: "Priority Triage"
+    difficulty: easy
+    description: "Set correct priority on 10 emails"
+    max_steps: 15
+    inbox_size: 10
+    success_threshold: 0.7
+    
+  - id: smart_categorization
+    name: "Smart Categorization"
+    difficulty: medium
+    description: "Categorize and prioritize 15 emails"
+    max_steps: 35
+    inbox_size: 15
+    success_threshold: 0.6
+    
+  - id: executive_assistant
+    name: "Executive Assistant"
+    difficulty: hard
+    description: "Full EA workflow: prioritize, reply, escalate, archive"
+    max_steps: 50
+    inbox_size: 20
+    success_threshold: 0.45
+
+observation_space:
+  type: structured
+  fields:
+    - name: current_email
+      type: object
+      description: "Email requiring attention"
+    - name: inbox_summary
+      type: dict
+      description: "Counts by priority/category"
+    - name: step_number
+      type: int
+    - name: emails_remaining
+      type: int
+    - name: available_actions
+      type: list[string]
+    - name: context
+      type: dict
+      description: "Task-specific context"
+
+action_space:
+  type: discrete_with_params
+  actions:
+    - name: set_priority
+      params: [email_id, priority]
+    - name: categorize
+      params: [email_id, category]
+    - name: draft_reply
+      params: [email_id, reply_draft]
+    - name: escalate
+      params: [email_id, escalation_reason]
+    - name: archive
+      params: [email_id]
+    - name: mark_spam
+      params: [email_id]
+    - name: snooze
+      params: [email_id, snooze_hours]
+    - name: flag_for_review
+      params: [email_id]
+    - name: skip
+      params: [email_id]
+
+reward:
+  range: [-1.0, 1.0]
+  type: dense
+  components:
+    - correctness: "Was the action correct vs ground truth?"
+    - efficiency: "Was action taken without wasted steps?"
+    - quality: "Quality of drafted reply or reasoning"
+    - penalty: "Penalties for bad behavior"
+
+reproducibility:
+  seed_support: true
+  deterministic: true
+  baseline_model: "gpt-4o-mini"
+  baseline_seeds: [42, 43, 44]
