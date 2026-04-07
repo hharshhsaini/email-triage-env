@@ -2,7 +2,7 @@
 FastAPI Server for the Email Triage OpenEnv.
 """
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ValidationError
@@ -48,8 +48,8 @@ async def runtime_error_handler(request: Request, exc: RuntimeError):
 
 
 class ResetRequest(BaseModel):
-    task_id: str = "priority_triage"
-    seed: int = 42
+    task_id: Optional[str] = "priority_triage"
+    seed: Optional[int] = 42
     n_emails: Optional[int] = None
 
 @app.get("/")
@@ -67,9 +67,13 @@ def get_health() -> Dict[str, str]:
     return {"status": "ok"}
 
 @app.post("/reset", response_model=Observation)
-def reset_env(req: ResetRequest) -> Any:
+def reset_env(req: ResetRequest = Body(default=ResetRequest())) -> Any:
     # ValueError is caught by the exception handler
-    obs = _global_env.reset(task_id=req.task_id, seed=req.seed, n_emails=req.n_emails)
+    obs = _global_env.reset(
+        task_id=req.task_id or "priority_triage",
+        seed=req.seed if req.seed is not None else 42,
+        n_emails=req.n_emails
+    )
     return obs.model_dump()
 
 @app.post("/step", response_model=StepResult)
