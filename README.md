@@ -17,6 +17,40 @@ app_port: 7860
 
 # Email Triage OpenEnv
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://img.shields.io/badge/tests-19%20passed-brightgreen.svg)](tests/)
+
+A production-ready OpenEnv environment for training and evaluating AI agents on enterprise email triage tasks.
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/hharshhsaini/email-triage-env.git
+cd email-triage-env
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+uvicorn app:app --reload
+
+# In another terminal, test the API
+curl http://localhost:7860/health
+curl http://localhost:7860/demo
+```
+
+## 🎯 Key Features
+
+- **3 Progressive Tasks**: Easy → Medium → Hard difficulty levels
+- **Deterministic Generation**: Seeded email generation for reproducibility
+- **Rich Reward Shaping**: Dense rewards with partial credit and behavioral penalties
+- **Comprehensive Testing**: 19 tests covering environment and graders
+- **REST API**: FastAPI server with 8 endpoints
+- **Docker Ready**: One-command deployment
+- **HF Spaces Compatible**: Deploy directly to Hugging Face Spaces
+
 ## Overview
 
 The Email Triage OpenEnv is a production-ready environment designed to benchmark and train AI agents to successfully function as executive assistants handling realistic enterprise email inboxes. As enterprise tasks increasingly rely on autonomous processing of unbounded communication, evaluating an agent's capability to understand nuance, execute strict categorical sorting, and draft high-quality contextual replies is crucial. 
@@ -77,6 +111,28 @@ The framework operates via complex reward shaping mechanisms. Standard sparse re
 
 ## Setup
 
+### Project Structure
+```
+email-triage-env/
+├── app.py                      # FastAPI server
+├── baseline.py                 # OpenAI baseline script
+├── Dockerfile                  # Docker configuration
+├── openenv.yaml               # OpenEnv specification
+├── requirements.txt           # Python dependencies
+├── env/
+│   ├── __init__.py
+│   ├── models.py              # Pydantic models
+│   ├── environment.py         # Core OpenEnv class
+│   ├── tasks.py               # Task definitions & graders
+│   ├── email_generator.py     # Email generation
+│   └── reward.py              # Reward function
+├── data/
+│   └── email_templates.json   # Email templates
+└── tests/
+    ├── test_environment.py    # Environment tests
+    └── test_graders.py        # Grader tests
+```
+
 ### Local Development
 ```bash
 git clone https://github.com/hharshhsaini/email-triage-env.git
@@ -103,6 +159,34 @@ export OPENAI_API_KEY="sk-..."
 python baseline.py
 ```
 
+Run specific task:
+```bash
+python baseline.py --task priority_triage --seed 42
+```
+
+Run with different model:
+```bash
+python baseline.py --model gpt-4o
+```
+
+## Testing
+
+Run all tests:
+```bash
+pytest tests/ -v
+```
+
+Run specific test file:
+```bash
+pytest tests/test_environment.py -v
+pytest tests/test_graders.py -v
+```
+
+Run with coverage:
+```bash
+pytest tests/ --cov=env --cov-report=html
+```
+
 ## Baseline Scores
 
 | Model            | Task                     | Mean Score | Std Dev |
@@ -113,23 +197,101 @@ python baseline.py
 
 ## API Reference
 
-- **`GET /`**: Info / tasks
-  `curl http://localhost:7860/`
-- **`GET /health`**: Status check
-  `curl http://localhost:7860/health`
-- **`POST /reset`**: Reset mapping
-  `curl -X POST http://localhost:7860/reset -d '{"task_id": "priority_triage"}' -H 'Content-Type: application/json'`
-- **`POST /step`**: Open action loop
-  `curl -X POST http://localhost:7860/step -d '{"email_id": "...", "action_type": "skip"}' -H 'Content-Type: application/json'`
-- **`GET /state`**: Full debug state
-  `curl http://localhost:7860/state`
+### Core Endpoints
+
+**`GET /`** - API Information
+```bash
+curl http://localhost:7860/
+```
+Returns API metadata and list of available tasks.
+
+**`GET /health`** - Health Check
+```bash
+curl http://localhost:7860/health
+```
+Returns `{"status": "ok"}` if the server is running.
+
+**`GET /tasks`** - List All Tasks
+```bash
+curl http://localhost:7860/tasks
+```
+Returns detailed information about all available tasks.
+
+**`GET /tasks/{task_id}`** - Get Task Details
+```bash
+curl http://localhost:7860/tasks/priority_triage
+```
+Returns specific task configuration and requirements.
+
+### Environment Interaction
+
+**`POST /reset`** - Reset Environment
+```bash
+curl -X POST http://localhost:7860/reset \
+  -H 'Content-Type: application/json' \
+  -d '{"task_id": "priority_triage", "seed": 42}'
+```
+Initializes a new episode and returns the first observation.
+
+**`POST /step`** - Take Action
+```bash
+curl -X POST http://localhost:7860/step \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email_id": "email_0000_...",
+    "action_type": "set_priority",
+    "priority": "high"
+  }'
+```
+Executes an action and returns the next observation, reward, and done flag.
+
+**`GET /state`** - Get Current State
+```bash
+curl http://localhost:7860/state
+```
+Returns the complete internal state for debugging.
+
+### Utility Endpoints
+
+**`GET /demo`** - Run Demo
+```bash
+curl http://localhost:7860/demo
+```
+Runs a demonstration episode with perfect actions and returns a transcript.
+
+**`POST /validate`** - Validate Environment
+```bash
+curl -X POST http://localhost:7860/validate
+```
+Runs OpenEnv compliance checks and returns validation results.
 
 ## Citation
 ```bibtex
 @software{email_triage_openenv,
   title = {Email Triage OpenEnv},
-  author = {Your Name},
+  author = {Harsh Saini},
   year = {2024},
-  url = {https://github.com/yourusername/email-triage-env}
+  url = {https://github.com/hharshhsaini/email-triage-env}
 }
 ```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## 📧 Contact
+
+- GitHub: [@hharshhsaini](https://github.com/hharshhsaini)
+- Repository: [email-triage-env](https://github.com/hharshhsaini/email-triage-env)
+
+## 🙏 Acknowledgments
+
+Built with:
+- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
+- [Pydantic](https://pydantic-docs.helpmanual.io/) - Data validation
+- [OpenAI API](https://openai.com/) - Baseline models
+- [OpenEnv](https://github.com/openenv) - Environment specification
