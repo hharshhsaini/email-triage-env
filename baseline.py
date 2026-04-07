@@ -2,14 +2,29 @@
 """
 Baseline inference script for Email Triage OpenEnv.
 
-Runs GPT-4o-mini against all 3 tasks and reports reproducible scores.
-Reads OPENAI_API_KEY from environment.
+Runs GPT-4o-mini (or custom model) against all 3 tasks and reports reproducible scores.
+
+Environment Variables (Competition Requirements):
+    API_BASE_URL: Optional custom API endpoint (e.g., for HuggingFace Inference)
+    MODEL_NAME: Model to use (defaults to gpt-4o-mini)
+    OPENAI_API_KEY or HF_TOKEN: API authentication token
+    LOCAL_IMAGE_NAME: Optional, for Docker-based inference (not used in this script)
+
+Stdout Logging:
+    Follows structured format (START/STEP/END) as JSON for competition evaluation.
+    All non-structured output goes to stderr.
 
 Usage:
     python baseline.py                    # Run all tasks, 3 seeds each
     python baseline.py --task priority_triage --seed 42
     python baseline.py --model gpt-4o    # Use different model
     python baseline.py --local           # Use local env (no HTTP)
+    
+    # With custom API endpoint:
+    export API_BASE_URL="https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct"
+    export MODEL_NAME="meta-llama/Llama-3.3-70B-Instruct"
+    export HF_TOKEN="hf_..."
+    python baseline.py
 """
 
 import os
@@ -62,16 +77,28 @@ Respond ONLY with valid JSON. No other text."""
 
 
 class EmailTriageAgent:
-    def __init__(self, model: str = "gpt-4o-mini", env_url: str = None, local: bool = False):
-        self.model = model
+    def __init__(self, model: str = None, env_url: str = None, local: bool = False):
+        # Competition requirements: support API_BASE_URL, MODEL_NAME, HF_TOKEN
+        self.model = model or os.getenv("MODEL_NAME", "gpt-4o-mini")
         self.env_url = env_url
         self.local = local
         self.local_env = EmailTriageEnv() if local else None
         
-        api_key = os.getenv("OPENAI_API_KEY")
+        # Get API credentials from environment
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+        api_base = os.getenv("API_BASE_URL")
+        
         if not api_key:
-            print("WARNING: OPENAI_API_KEY environment variable not set. LLM calls will fail.")
-        self.client = OpenAI(api_key=api_key)
+            print("WARNING: OPENAI_API_KEY or HF_TOKEN environment variable not set. LLM calls will fail.", file=sys.stderr)
+            # Use dummy key for testing (will fail on actual API calls)
+            api_key = "dummy-key-for-testing"
+        
+        # Initialize OpenAI client with optional base_url for custom endpoints
+        client_kwargs = {"api_key": api_key}
+        if api_base:
+            client_kwargs["base_url"] = api_base
+            
+        self.client = OpenAI(**client_kwargs)
 
     def _get_action(self, observation: dict) -> dict:
         """Get next action from LLM given current observation."""
@@ -131,15 +158,20 @@ class EmailTriageAgent:
 
     def run_episode(self, task_id: str, seed: int = 42, verbose: bool = False) -> dict:
         """Run one full episode. Returns {score, steps, actions, final_reward}."""
+        # Competition requirement: Structured stdout logging (START/STEP/END)
+        print(json.dumps({
+            "type": "START",
+            "task_id": task_id,
+            "seed": seed,
+            "model": self.model
+        }))
+        
         obs = self._reset_env(task_id, seed)
         done = obs.get("episode_done", False)
         
         steps = 0
         actions_taken = []
         final_summary = {}
-
-        if verbose:
-            print(f"\n--- Starting Episode (Task: {task_id}, Seed: {seed}) ---")
 
         while not done:
             action_payload = self._get_action(obs)
@@ -148,6 +180,15 @@ class EmailTriageAgent:
             steps += 1
             reward_info = res["info"].get("reward_breakdown", {})
             done = res["done"]
+            
+            # Competition requirement: Log each step
+            print(json.dumps({
+                "type": "STEP",
+                "step": steps,
+                "action": action_payload.get("action_type"),
+                "email_id": action_payload.get("email_id"),
+                "reward": reward_info.get("total", 0)
+            }))
             
             actions_taken.append({
                 "step": steps,
@@ -159,7 +200,7 @@ class EmailTriageAgent:
                 atype = action_payload.get("action_type")
                 reason = action_payload.get("reasoning", "")[:50]
                 total_rew = reward_info.get("total", 0)
-                print(f"Step {steps}: {atype} | Reward: {total_rew} | {reason}...")
+                print(f"[VERBOSE] Step {steps}: {atype} | Reward: {total_rew} | {reason}...", file=sys.stderr)
                 
             if done:
                 final_summary = res["info"].get("episode_summary", {})
@@ -167,8 +208,18 @@ class EmailTriageAgent:
                 
             obs = res["observation"]
 
+        # Competition requirement: Log episode end
+        final_score = final_summary.get("task_score", 0.0)
+        print(json.dumps({
+            "type": "END",
+            "task_id": task_id,
+            "seed": seed,
+            "score": final_score,
+            "steps": steps
+        }))
+
         return {
-            "score": final_summary.get("task_score", 0.0),
+            "score": final_score,
             "total_score": final_summary.get("total_score", 0.0),
             "steps": steps,
             "actions": actions_taken,
@@ -181,14 +232,14 @@ def run_all_tasks(agent: EmailTriageAgent):
     seeds = [42, 43, 44]
     
     results = {}
-    print("\n" + "="*50)
-    print("Running All Tasks Formulation")
-    print("="*50)
+    print("\n" + "="*50, file=sys.stderr)
+    print("Running All Tasks Formulation", file=sys.stderr)
+    print("="*50, file=sys.stderr)
     
     for task in tasks:
         task_scores = []
         for seed in seeds:
-            print(f"Running {task} (seed {seed})...")
+            print(f"Running {task} (seed {seed})...", file=sys.stderr)
             res = agent.run_episode(task_id=task, seed=seed, verbose=False)
             task_scores.append(res["score"])
         
@@ -202,15 +253,15 @@ def run_all_tasks(agent: EmailTriageAgent):
             "std_dev": std_dev
         }
     
-    print("\n" + "="*50)
-    print("Baseline scores (GPT-4o-mini, seeds 42/43/44):")
+    print("\n" + "="*50, file=sys.stderr)
+    print("Baseline scores (GPT-4o-mini, seeds 42/43/44):", file=sys.stderr)
     for task, data in results.items():
-        print(f"  {task:<25}: {data['average']:.2f} ± {data['std_dev']:.2f}")
-    print("="*50)
+        print(f"  {task:<25}: {data['average']:.2f} ± {data['std_dev']:.2f}", file=sys.stderr)
+    print("="*50, file=sys.stderr)
     
     with open("baseline_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    print("Saved results to baseline_results.json")
+    print("Saved results to baseline_results.json", file=sys.stderr)
     
     return results
 
@@ -219,7 +270,7 @@ def main():
     parser = argparse.ArgumentParser(description="Email Triage Baseline Test")
     parser.add_argument("--task", type=str, help="Specific task ID to run")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    parser.add_argument("--model", type=str, default="gpt-4o-mini", help="OpenAI Model")
+    parser.add_argument("--model", type=str, help="OpenAI Model (defaults to MODEL_NAME env var or gpt-4o-mini)")
     parser.add_argument("--local", action="store_true", help="Run env locally without requests")
     parser.add_argument("--url", type=str, default="http://localhost:7860", help="Env URL if remote")
     args = parser.parse_args()
@@ -229,11 +280,11 @@ def main():
     if args.task:
         # Run specific task
         res = agent.run_episode(task_id=args.task, seed=args.seed, verbose=True)
-        print(f"\nFinal Summary: {json.dumps(res['summary'], indent=2)}")
+        print(f"\nFinal Summary: {json.dumps(res['summary'], indent=2)}", file=sys.stderr)
     else:
         # Run all
         if not args.local:
-            print("Running in remote mode. Make sure the server is up!")
+            print("Running in remote mode. Make sure the server is up!", file=sys.stderr)
         run_all_tasks(agent)
 
 
