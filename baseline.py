@@ -273,19 +273,24 @@ def main():
     parser.add_argument("--model", type=str, help="OpenAI Model (defaults to MODEL_NAME env var or gpt-4o-mini)")
     parser.add_argument("--local", action="store_true", help="Run env locally without requests")
     parser.add_argument("--url", type=str, default="http://localhost:7860", help="Env URL if remote")
+    parser.add_argument("--all", action="store_true", help="Run all tasks with multiple seeds")
     args = parser.parse_args()
     
     agent = EmailTriageAgent(model=args.model, env_url=args.url, local=args.local)
     
-    if args.task:
+    if args.all:
+        # Run all tasks with multiple seeds (for benchmarking)
+        if not args.local:
+            print("Running in remote mode. Make sure the server is up!", file=sys.stderr)
+        run_all_tasks(agent)
+    elif args.task:
         # Run specific task
         res = agent.run_episode(task_id=args.task, seed=args.seed, verbose=True)
         print(f"\nFinal Summary: {json.dumps(res['summary'], indent=2)}", file=sys.stderr)
     else:
-        # Run all
-        if not args.local:
-            print("Running in remote mode. Make sure the server is up!", file=sys.stderr)
-        run_all_tasks(agent)
+        # Default: Run priority_triage task once (for competition validation)
+        print("No task specified. Running default task: priority_triage with seed 42", file=sys.stderr)
+        res = agent.run_episode(task_id="priority_triage", seed=42, verbose=False)
 
 
 if __name__ == "__main__":
