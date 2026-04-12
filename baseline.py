@@ -158,13 +158,8 @@ class EmailTriageAgent:
 
     def run_episode(self, task_id: str, seed: int = 42, verbose: bool = False) -> dict:
         """Run one full episode. Returns {score, steps, actions, final_reward}."""
-        # Competition requirement: Structured stdout logging (START/STEP/END)
-        print(json.dumps({
-            "type": "START",
-            "task_id": task_id,
-            "seed": seed,
-            "model": self.model
-        }))
+        # Competition requirement: Structured stdout logging with [START]/[STEP]/[END] format
+        print(f"[START] task={task_id} seed={seed} model={self.model}", flush=True)
         
         obs = self._reset_env(task_id, seed)
         done = obs.get("episode_done", False)
@@ -181,14 +176,9 @@ class EmailTriageAgent:
             reward_info = res["info"].get("reward_breakdown", {})
             done = res["done"]
             
-            # Competition requirement: Log each step
-            print(json.dumps({
-                "type": "STEP",
-                "step": steps,
-                "action": action_payload.get("action_type"),
-                "email_id": action_payload.get("email_id"),
-                "reward": reward_info.get("total", 0)
-            }))
+            # Competition requirement: Log each step with [STEP] format
+            reward_val = reward_info.get("total", 0)
+            print(f"[STEP] step={steps} reward={reward_val:.3f}", flush=True)
             
             actions_taken.append({
                 "step": steps,
@@ -208,15 +198,9 @@ class EmailTriageAgent:
                 
             obs = res["observation"]
 
-        # Competition requirement: Log episode end
+        # Competition requirement: Log episode end with [END] format
         final_score = final_summary.get("task_score", 0.0)
-        print(json.dumps({
-            "type": "END",
-            "task_id": task_id,
-            "seed": seed,
-            "score": final_score,
-            "steps": steps
-        }))
+        print(f"[END] task={task_id} score={final_score:.3f} steps={steps}", flush=True)
 
         return {
             "score": final_score,
