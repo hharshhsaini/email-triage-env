@@ -25,6 +25,10 @@ tasks:
     max_steps: 15
     inbox_size: 10
     success_threshold: 0.7
+    grader:
+      type: automated
+      class: PriorityTriageGrader
+      metrics: [accuracy, precision, recall, f1_score]
     
   - id: smart_categorization
     name: "Smart Categorization"
@@ -33,6 +37,10 @@ tasks:
     max_steps: 35
     inbox_size: 15
     success_threshold: 0.6
+    grader:
+      type: automated
+      class: SmartCategorizationGrader
+      metrics: [accuracy, category_distribution, consistency]
     
   - id: executive_assistant
     name: "Executive Assistant"
@@ -41,6 +49,10 @@ tasks:
     max_steps: 50
     inbox_size: 20
     success_threshold: 0.45
+    grader:
+      type: automated
+      class: ExecutiveAssistantGrader
+      metrics: [prioritization_f1, reply_quality, escalation_accuracy, inbox_hygiene]
 
 observation_space:
   type: structured
