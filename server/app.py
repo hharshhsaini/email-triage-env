@@ -12,6 +12,7 @@ import copy
 from env.environment import EmailTriageEnv
 from env.models import Action, Observation, StepResult, EpisodeState
 from env.tasks import TASK_REGISTRY
+from env.graders import GRADER_REGISTRY
 
 app = FastAPI(
     title="Email Triage OpenEnv",
@@ -108,26 +109,61 @@ def list_graders() -> Dict[str, Any]:
         "graders": [
             {
                 "task_id": "priority_triage",
-                "grader_class": "PriorityTriageGrader",
+                "grader": "env.graders:grade_priority_triage",
+                "difficulty": "easy",
                 "type": "automated",
                 "metrics": ["accuracy", "precision", "recall", "f1_score"],
-                "score_range": [0.01, 0.99]
+                "score_range": [0.0, 1.0],
             },
             {
                 "task_id": "smart_categorization",
-                "grader_class": "SmartCategorizationGrader",
+                "grader": "env.graders:grade_smart_categorization",
+                "difficulty": "medium",
                 "type": "automated",
                 "metrics": ["accuracy", "category_distribution", "consistency"],
-                "score_range": [0.01, 0.99]
+                "score_range": [0.0, 1.0],
             },
             {
                 "task_id": "executive_assistant",
-                "grader_class": "ExecutiveAssistantGrader",
+                "grader": "env.graders:grade_executive_assistant",
+                "difficulty": "hard",
                 "type": "automated",
                 "metrics": ["prioritization_f1", "reply_quality", "escalation_accuracy", "inbox_hygiene"],
-                "score_range": [0.01, 0.99]
-            }
-        ]
+                "score_range": [0.0, 1.0],
+            },
+        ],
+    }
+
+
+@app.post("/grade/{task_id}")
+def grade_episode(task_id: str, episode_state: Dict[str, Any] = Body(default={})) -> Dict[str, Any]:
+    """
+    Grade a completed episode for the given task.
+
+    The OpenEnv validator POSTs episode state here to confirm graders are
+    live and produce scores in [0.0, 1.0].
+
+    Body (optional JSON):
+      {
+        "processed": [...],   # list of action dicts from step() calls
+        "inbox":     [...],   # list of EmailWithContext dicts
+        "ground_truth": {...} # optional pre-computed ground truth
+      }
+
+    Returns:
+      { "task_id": ..., "score": 0.0-1.0, "grader": "module:function" }
+    """
+    if task_id not in GRADER_REGISTRY:
+        raise HTTPException(status_code=400, detail=f"Unknown task '{task_id}'. Available: {list(GRADER_REGISTRY.keys())}")
+
+    grader_fn = GRADER_REGISTRY[task_id]
+    score = grader_fn(episode_state if episode_state else None)
+
+    return {
+        "task_id": task_id,
+        "score": score,
+        "grader": f"env.graders:grade_{task_id}",
+        "score_range": [0.0, 1.0],
     }
 
 @app.get("/tasks/{task_id}")
@@ -154,7 +190,31 @@ def validate_env() -> Dict[str, Any]:
         env = EmailTriageEnv()
         obs = env.reset("priority_triage", 42, n_emails=2)
         if obs is None: raise ValueError("Reset returned None")
-        return {"status": "valid", "detail": "Environment fully OpenEnv compliant."}
+        
+        # Validate graders
+        from env.graders import GRADER_REGISTRY
+        grader_status = {}
+        for task_id, grader_fn in GRADER_REGISTRY.items():
+            try:
+                score = grader_fn(None)  # Dry run
+                grader_status[task_id] = {
+                    "status": "valid",
+                    "score": score,
+                    "has_grader": True
+                }
+            except Exception as e:
+                grader_status[task_id] = {
+                    "status": "error",
+                    "error": str(e),
+                    "has_grader": False
+                }
+        
+        return {
+            "status": "valid",
+            "detail": "Environment fully OpenEnv compliant.",
+            "tasks_with_graders": len([g for g in grader_status.values() if g["has_grader"]]),
+            "grader_status": grader_status
+        }
     except Exception as e:
         return {"status": "invalid", "detail": str(e)}
 
@@ -210,4 +270,4 @@ if __name__ == "__main__":
 def main():
     """Entry point for the server script."""
     import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+    uvicorn.run("app:app", host="0.0.0.0", port=7860)

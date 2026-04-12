@@ -190,7 +190,31 @@ def validate_env() -> Dict[str, Any]:
         env = EmailTriageEnv()
         obs = env.reset("priority_triage", 42, n_emails=2)
         if obs is None: raise ValueError("Reset returned None")
-        return {"status": "valid", "detail": "Environment fully OpenEnv compliant."}
+        
+        # Validate graders
+        from env.graders import GRADER_REGISTRY
+        grader_status = {}
+        for task_id, grader_fn in GRADER_REGISTRY.items():
+            try:
+                score = grader_fn(None)  # Dry run
+                grader_status[task_id] = {
+                    "status": "valid",
+                    "score": score,
+                    "has_grader": True
+                }
+            except Exception as e:
+                grader_status[task_id] = {
+                    "status": "error",
+                    "error": str(e),
+                    "has_grader": False
+                }
+        
+        return {
+            "status": "valid",
+            "detail": "Environment fully OpenEnv compliant.",
+            "tasks_with_graders": len([g for g in grader_status.values() if g["has_grader"]]),
+            "grader_status": grader_status
+        }
     except Exception as e:
         return {"status": "invalid", "detail": str(e)}
 
