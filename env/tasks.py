@@ -126,7 +126,7 @@ class PriorityTriageGrader(TaskGrader):
         return gt
 
     def grade_episode(self, processed: List[Dict], ground_truth: Dict, inbox: List[EmailWithContext]) -> float:
-        if not inbox: return 0.0
+        if not inbox: return 0.01  # Avoid exactly 0.0
         
         # We need the final SET_PRIORITY action per email
         email_to_pred = {}
@@ -140,16 +140,16 @@ class PriorityTriageGrader(TaskGrader):
             true = ground_truth[email.id]["priority"]
             
             if not pred:
-                scores.append(0.0)
+                scores.append(0.01)  # Small non-zero score
                 continue
                 
             dist = _priority_distance(pred, true)
             if dist == 0:
-                scores.append(1.0)
+                scores.append(0.99)  # Avoid exactly 1.0
             elif dist == 1:
                 scores.append(0.5)
             else:
-                scores.append(0.0)
+                scores.append(0.01)  # Avoid exactly 0.0
                 
         return sum(scores) / len(scores)
 
@@ -208,7 +208,7 @@ class SmartCategorizationGrader(TaskGrader):
         return gt
 
     def grade_episode(self, processed: List[Dict], ground_truth: Dict, inbox: List[EmailWithContext]) -> float:
-        if not inbox: return 0.0
+        if not inbox: return 0.01  # Avoid exactly 0.0
         
         # Track both actions per email
         email_actions = {}
@@ -229,29 +229,29 @@ class SmartCategorizationGrader(TaskGrader):
             true_prio = ground_truth[email.id]["priority"]
             true_cat = ground_truth[email.id]["category"]
             
-            email_score = 0.0
+            email_score = 0.01  # Start with small non-zero
             
             # Priority (0.4 weight)
             if state["priority"]:
                 if state["priority"] == true_prio:
-                    email_score += 0.4
+                    email_score += 0.39  # Avoid exactly 0.4
                 elif _priority_distance(state["priority"], true_prio) == 1:
-                    email_score += 0.2
+                    email_score += 0.19
             else:
                 all_complete = False
                 
             # Category (0.6 weight)
             if state["category"]:
                 if state["category"] == true_cat:
-                    email_score += 0.6
+                    email_score += 0.59  # Avoid exactly 0.6
             else:
                 all_complete = False
                 
-            scores.append(email_score)
+            scores.append(min(0.99, email_score))  # Cap at 0.99
             
         final = sum(scores) / len(scores)
         if all_complete:
-            final = min(1.0, final + 0.05)
+            final = min(0.99, final + 0.05)  # Cap at 0.99
             
         return final
 
@@ -349,7 +349,8 @@ class ExecutiveAssistantGrader(TaskGrader):
         tp_prio = len(pred_prio & true_prio)
         fp_prio = len(pred_prio - true_prio)
         fn_prio = len(true_prio - pred_prio)
-        f1_prio = (tp_prio) / (tp_prio + 0.5 * (fp_prio + fn_prio)) if true_prio else 1.0
+        f1_prio = (tp_prio) / (tp_prio + 0.5 * (fp_prio + fn_prio)) if true_prio else 0.99
+        f1_prio = min(0.99, max(0.01, f1_prio))  # Clamp to (0.01, 0.99)
         
         # 2. Reply quality (40%)
         true_replies = [eid for eid, gt in ground_truth.items() if gt["reply_needed"]]
@@ -371,6 +372,7 @@ class ExecutiveAssistantGrader(TaskGrader):
             reply_score += part
             
         avg_reply = reply_score / max(1, len(true_replies))
+        avg_reply = min(0.99, max(0.01, avg_reply))  # Clamp to (0.01, 0.99)
         
         # 3. Escalation accuracy (20%)
         true_esc = {eid for eid, gt in ground_truth.items() if gt["is_legal"]}
@@ -378,17 +380,20 @@ class ExecutiveAssistantGrader(TaskGrader):
         fp_esc = len(pred_escalate - true_esc)
         fn_esc = len(true_esc - pred_escalate)
         if len(true_esc) == 0 and len(pred_escalate) == 0:
-            f1_esc = 1.0
+            f1_esc = 0.99
         else:
-            f1_esc = (tp_esc) / (tp_esc + 0.5 * (fp_esc + fn_esc)) if (tp_esc + fp_esc + fn_esc) > 0 else 1.0
+            f1_esc = (tp_esc) / (tp_esc + 0.5 * (fp_esc + fn_esc)) if (tp_esc + fp_esc + fn_esc) > 0 else 0.99
+        f1_esc = min(0.99, max(0.01, f1_esc))  # Clamp to (0.01, 0.99)
             
         # 4. Inbox hygiene (10%)
         true_spam = {eid for eid, gt in ground_truth.items() if gt["is_spam_nl"]}
         tp_spam = len(pred_archived_spam & true_spam)
-        hygiene = tp_spam / len(true_spam) if true_spam else 1.0
+        hygiene = tp_spam / len(true_spam) if true_spam else 0.99
         if vip_mistakes > 0: hygiene -= 0.1
+        hygiene = min(0.99, max(0.01, hygiene))  # Clamp to (0.01, 0.99)
         
-        return 0.3 * f1_prio + 0.4 * avg_reply + 0.2 * f1_esc + 0.1 * hygiene
+        final_score = 0.3 * f1_prio + 0.4 * avg_reply + 0.2 * f1_esc + 0.1 * hygiene
+        return min(0.99, max(0.01, final_score))  # Final clamp to (0.01, 0.99)
 
     def step_reward(self, action: Action, email: EmailWithContext, ground_truth: Dict) -> Reward:
         gt = ground_truth[email.id]
