@@ -16,43 +16,34 @@ environment:
   reset_endpoint: /reset
   step_endpoint: /step
   state_endpoint: /state
-  
+
 tasks:
   - id: priority_triage
     name: "Priority Triage"
     difficulty: easy
-    description: "Set correct priority on 10 emails"
+    description: "Set correct priority on 10 emails (urgent/high/normal/low/spam). Uses SET_PRIORITY actions. Score = weighted priority accuracy."
     max_steps: 15
     inbox_size: 10
     success_threshold: 0.7
-    grader:
-      type: automated
-      class: PriorityTriageGrader
-      metrics: [accuracy, precision, recall, f1_score]
-    
+    grader: "env.graders:grade_priority_triage"
+
   - id: smart_categorization
     name: "Smart Categorization"
     difficulty: medium
-    description: "Categorize and prioritize 15 emails"
+    description: "Categorize AND prioritize 15 emails using CATEGORIZE and SET_PRIORITY. Score rewards both correct category (60%) and correct priority (40%)."
     max_steps: 35
     inbox_size: 15
     success_threshold: 0.6
-    grader:
-      type: automated
-      class: SmartCategorizationGrader
-      metrics: [accuracy, category_distribution, consistency]
-    
+    grader: "env.graders:grade_smart_categorization"
+
   - id: executive_assistant
     name: "Executive Assistant"
     difficulty: hard
-    description: "Full EA workflow: prioritize, reply, escalate, archive"
+    description: "Full EA workflow on 20 emails: prioritize top emails, draft quality replies, escalate legal/compliance issues, archive noise. Score = prioritization_f1 (30%) + reply_quality (40%) + escalation_accuracy (20%) + inbox_hygiene (10%)."
     max_steps: 50
     inbox_size: 20
     success_threshold: 0.45
-    grader:
-      type: automated
-      class: ExecutiveAssistantGrader
-      metrics: [prioritization_f1, reply_quality, escalation_accuracy, inbox_hygiene]
+    grader: "env.graders:grade_executive_assistant"
 
 observation_space:
   type: structured
@@ -102,7 +93,7 @@ reward:
     - correctness: "Was the action correct vs ground truth?"
     - efficiency: "Was action taken without wasted steps?"
     - quality: "Quality of drafted reply or reasoning"
-    - penalty: "Penalties for bad behavior"
+    - penalty: "Penalties for bad behavior (loops, VIP mistakes, excessive skips)"
 
 reproducibility:
   seed_support: true
