@@ -93,7 +93,9 @@ def list_tasks() -> List[Dict[str, Any]]:
             "task_id": key,
             "description": cfg.description,
             "difficulty": cfg.difficulty,
-            "n_emails": cfg.n_emails
+            "n_emails": cfg.n_emails,
+            "has_grader": True,  # All our tasks have graders
+            "grader_type": "automated"
         }
         for key, cfg in TASK_REGISTRY.items()
     ]
@@ -109,7 +111,9 @@ def get_task_details(task_id: str) -> Dict[str, Any]:
         "difficulty": cfg.difficulty,
         "n_emails": cfg.n_emails,
         "max_steps": cfg.max_steps,
-        "context": cfg.context
+        "context": cfg.context,
+        "has_grader": True,
+        "grader_type": "automated"
     }
 
 @app.post("/validate")
@@ -171,9 +175,4 @@ def run_demo() -> Dict[str, Any]:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=True)
-
-def main():
-    """Entry point for the server script."""
-    import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=True)
