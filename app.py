@@ -100,6 +100,36 @@ def list_tasks() -> List[Dict[str, Any]]:
         for key, cfg in TASK_REGISTRY.items()
     ]
 
+@app.get("/graders")
+def list_graders() -> Dict[str, Any]:
+    """Return information about available graders for competition validation."""
+    return {
+        "count": 3,
+        "graders": [
+            {
+                "task_id": "priority_triage",
+                "grader_class": "PriorityTriageGrader",
+                "type": "automated",
+                "metrics": ["accuracy", "precision", "recall", "f1_score"],
+                "score_range": [0.01, 0.99]
+            },
+            {
+                "task_id": "smart_categorization",
+                "grader_class": "SmartCategorizationGrader",
+                "type": "automated",
+                "metrics": ["accuracy", "category_distribution", "consistency"],
+                "score_range": [0.01, 0.99]
+            },
+            {
+                "task_id": "executive_assistant",
+                "grader_class": "ExecutiveAssistantGrader",
+                "type": "automated",
+                "metrics": ["prioritization_f1", "reply_quality", "escalation_accuracy", "inbox_hygiene"],
+                "score_range": [0.01, 0.99]
+            }
+        ]
+    }
+
 @app.get("/tasks/{task_id}")
 def get_task_details(task_id: str) -> Dict[str, Any]:
     if task_id not in TASK_REGISTRY:
